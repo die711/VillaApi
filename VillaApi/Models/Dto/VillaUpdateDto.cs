@@ -1,22 +1,22 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
-namespace VillaApi.Models;
+namespace VillaApi.Models.Dto;
 
-public class Villa
+public class VillaUpdateDto
 {
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    [Required]
     public int Id { get; set; }
+    [Required]
+    [MaxLength(30)]
     public string Nombre { get; set; }
     public string Detalle { get; set; }
-    
     [Required]
     public double Tarifa { get; set; }
+    [Required]
     public int Ocupantes { get; set; }
     public int MetrosCuadrados { get; set; }
+    [Required]
     public string ImageUrl { get; set; }
     public string Amenidad { get; set; }
-    public DateTime FechaCreacion { get; set; }
-    public DateTime FechaActualizacion { get; set; }
 }

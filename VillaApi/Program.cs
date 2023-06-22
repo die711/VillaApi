@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using VillaApi;
 using VillaApi.Datos;
 using VillaApi.Repositorio;
 using VillaApi.Repositorio.IRepositorio;
@@ -18,6 +19,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(option =>
 });
 
 builder.Services.AddScoped<IVillaRepositorio, VillaRepositorio>();
+
+builder.Services.AddAutoMapper(typeof(MappingConfig));
 
 var app = builder.Build();
 
