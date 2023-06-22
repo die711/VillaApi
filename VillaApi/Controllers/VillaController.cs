@@ -46,7 +46,7 @@ public class VillaController : ControllerBase
         return _response;
     }
 
-    [HttpGet("{id:int}")]
+    [HttpGet("{id:int}",Name = "GetVilla")]
     public async Task<ActionResult<APIResponse>> GetVilla(int id)
     {
         try
@@ -81,7 +81,76 @@ public class VillaController : ControllerBase
 
         return _response;
     }
-    
-    
-    
+
+    [HttpPost]
+    public async Task<ActionResult<APIResponse>> CrearVilla([FromBody] VillaCreateDto? createDto)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (createDto == null)
+                return BadRequest(createDto);
+
+            if (await _villaRepo.Obtener(v => v.Nombre.ToLower() == createDto.Nombre.ToLower()) != null)
+            {
+                ModelState.AddModelError("NombreExiste", "La villa con ese nombre ya existe");
+                return BadRequest(ModelState);
+            }
+
+            Villa modelo = _mapper.Map<Villa>(createDto);
+
+            modelo.FechaCreacion = DateTime.Now;
+            modelo.FechaActualizacion = DateTime.Now;
+
+            await _villaRepo.Crear(modelo);
+            _response.Resultado = modelo;
+            _response.EstatusCode = HttpStatusCode.Created;
+
+            return CreatedAtRoute("GetVilla", new { id = modelo.Id }, _response);
+        }
+        catch (Exception ex)
+        {
+            _response.IsExitoso = false;
+            _response.ErrorMessages = new List<string>() { ex.ToString() };
+        }
+        
+        return _response;
+    }
+
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> UpdateVilla([FromBody] VillaUpdateDto updateDto, int id)
+    {
+        try
+        {
+            if (updateDto == null || id != updateDto.Id)
+            {
+                _response.IsExitoso = false;
+                _response.EstatusCode = HttpStatusCode.BadRequest;
+                return BadRequest(_response);
+            }
+
+            Villa modelo = _mapper.Map<Villa>(updateDto);
+
+            await _villaRepo.Actualizar(modelo);
+            _response.EstatusCode = HttpStatusCode.NoContent;
+            return Ok(_response);
+
+        }
+        catch (Exception ex)
+        {
+            _response.IsExitoso = false;
+            _response.ErrorMessages = new List<string>() { ex.ToString() };
+        }
+
+        return BadRequest(_response);
+    }
+
+    public async Task<IActionResult> DeleteVilla(int id)
+    {
+        return BadRequest();
+    }
+
+
 }
