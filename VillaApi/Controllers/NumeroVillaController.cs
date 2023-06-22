@@ -24,6 +24,22 @@ public class NumeroVillaController : ControllerBase
         _mapper = mapper;
         _response = new();
     }
-    
-    
+
+    [HttpGet]
+    public async Task<ActionResult<APIResponse>> GetNumeroVillas()
+    {
+        try
+        {
+            _logger.LogInformation("Obtener numeros de villas");
+            IEnumerable<NumeroVilla> numeroVillas = await _numeroVillaRepo.ObtenerTodos(incluirPropiedades: "Villa");
+        }
+        catch (Exception ex)
+        {
+            _response.IsExitoso = false;
+            _response.ErrorMessages = new List<string>() { ex.ToString() };
+        }
+
+        return _response;
+    }
+
 }
