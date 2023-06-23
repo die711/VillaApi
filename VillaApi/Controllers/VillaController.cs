@@ -1,5 +1,6 @@
 using System.Net;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using VillaApi.Models;
@@ -24,7 +25,8 @@ public class VillaController : ControllerBase
         _mapper = mapper;
         _response = new();
     }
-
+    
+    
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<APIResponse>> GetVillas()
@@ -49,6 +51,7 @@ public class VillaController : ControllerBase
     }
 
     [HttpGet("{id:int}", Name = "GetVilla")]
+    [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -87,6 +90,7 @@ public class VillaController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles ="admin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<APIResponse>> CrearVilla([FromBody] VillaCreateDto? createDto)
@@ -126,6 +130,7 @@ public class VillaController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Roles ="admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -164,6 +169,7 @@ public class VillaController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Roles ="admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

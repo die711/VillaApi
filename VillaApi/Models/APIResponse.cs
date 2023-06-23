@@ -4,6 +4,10 @@ namespace VillaApi.Models;
 
 public class APIResponse
 {
+    public APIResponse()
+    {
+        ErrorMessages = new List<string>();
+    }
 
     public HttpStatusCode EstatusCode { get; set; }
     public bool IsExitoso { get; set; }
