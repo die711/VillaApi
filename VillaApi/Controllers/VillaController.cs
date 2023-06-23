@@ -1,5 +1,6 @@
 using System.Net;
 using AutoMapper;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using VillaApi.Models;
 using VillaApi.Models.Dto;
@@ -25,6 +26,7 @@ public class VillaController : ControllerBase
     }
 
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<APIResponse>> GetVillas()
     {
         try
@@ -47,6 +49,9 @@ public class VillaController : ControllerBase
     }
 
     [HttpGet("{id:int}", Name = "GetVilla")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<APIResponse>> GetVilla(int id)
     {
         try
@@ -82,6 +87,8 @@ public class VillaController : ControllerBase
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<APIResponse>> CrearVilla([FromBody] VillaCreateDto? createDto)
     {
         try
@@ -119,6 +126,9 @@ public class VillaController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateVilla([FromBody] VillaUpdateDto updateDto, int id)
     {
         try
@@ -130,8 +140,16 @@ public class VillaController : ControllerBase
                 return BadRequest(_response);
             }
 
+            if (await _villaRepo.Obtener(v => v.Id == id) == null)
+            {
+                _response.IsExitoso = false;
+                _response.EstatusCode = HttpStatusCode.NotFound;
+                return NotFound(_response);
+            }
+            
             Villa modelo = _mapper.Map<Villa>(updateDto);
-
+            
+            
             await _villaRepo.Actualizar(modelo);
             _response.EstatusCode = HttpStatusCode.NoContent;
             return Ok(_response);
@@ -146,6 +164,9 @@ public class VillaController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteVilla(int id)
     {
         try
@@ -179,4 +200,34 @@ public class VillaController : ControllerBase
 
         return BadRequest(_response);
     }
+    
+    [HttpPatch("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> UpdatePartialVilla(JsonPatchDocument<VillaUpdateDto> patchDto, int id)
+    {
+        if (patchDto == null || id == 0)
+            return BadRequest();
+
+        var villa =await _villaRepo.Obtener(v => v.Id == id, tracked: false);
+        
+        VillaUpdateDto villaDto = _mapper.Map<VillaUpdateDto>(villa);
+
+        if (villa == null)
+            return BadRequest();
+        
+        patchDto.ApplyTo(villaDto,ModelState);
+
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+        
+        Villa modelo = _mapper.Map<Villa>(villaDto);
+
+        await _villaRepo.Actualizar(modelo);
+        _response.EstatusCode = HttpStatusCode.NoContent;
+
+        return Ok(_response);
+        
+    }
+    
 }
