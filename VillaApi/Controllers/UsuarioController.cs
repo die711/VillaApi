@@ -2,13 +2,13 @@ using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using VillaApi.Models;
 using VillaApi.Models.Dto;
-using VillaApi.Repositorio;
 using VillaApi.Repositorio.IRepositorio;
 
 namespace VillaApi.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
+[ApiVersionNeutral]
 public class UsuarioController : Controller
 {
     private readonly IUsuarioRepositorio _usuarioRepo;

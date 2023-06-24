@@ -1,17 +1,15 @@
 using System.Net;
 using AutoMapper;
-using Azure;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using VillaApi.Models;
 using VillaApi.Models.Dto;
 using VillaApi.Repositorio.IRepositorio;
 
-namespace VillaApi.Controllers;
+namespace VillaApi.Controllers.v1;
 
-[Route("api/[controller]")]
+[Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
+[ApiVersion("1.0")]
 public class NumeroVillaController : ControllerBase
 {
     private readonly ILogger<NumeroVillaController> _logger;
@@ -30,6 +28,7 @@ public class NumeroVillaController : ControllerBase
         _response = new();
     }
 
+ 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<APIResponse>> GetNumeroVillas()

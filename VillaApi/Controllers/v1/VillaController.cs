@@ -7,10 +7,11 @@ using VillaApi.Models;
 using VillaApi.Models.Dto;
 using VillaApi.Repositorio.IRepositorio;
 
-namespace VillaApi.Controllers;
+namespace VillaApi.Controllers.v1;
 
-[Route("api/[controller]")]
+[Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
+[ApiVersion("1.0")]
 public class VillaController : ControllerBase
 {
     private readonly ILogger<VillaController> _logger;
@@ -90,7 +91,7 @@ public class VillaController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles ="admin")]
+    [Authorize(Roles ="master")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<APIResponse>> CrearVilla([FromBody] VillaCreateDto? createDto)
