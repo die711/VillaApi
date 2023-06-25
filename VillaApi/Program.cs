@@ -1,5 +1,6 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -16,7 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers(option =>
 {
-    option.CacheProfiles.Add("Default30",new CacheProfile()
+    option.CacheProfiles.Add("Default30", new CacheProfile()
     {
         Duration = 30
     });
@@ -57,15 +58,14 @@ builder.Services.AddSwaggerGen(options =>
         Title = "Magic Villa v1",
         Description = "API para villas"
     });
-    
-    
+
+
     options.SwaggerDoc("v2", new OpenApiInfo
     {
         Version = "v2",
         Title = "Magic Villa v2",
         Description = "API para villas"
     });
-    
 });
 
 builder.Services.AddResponseCaching();
@@ -90,6 +90,7 @@ builder.Services.AddAuthentication(x =>
         };
     });
 
+builder.Services.AddIdentity<UsuarioAplicacion, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(option =>
 {
@@ -127,7 +128,7 @@ if (app.Environment.IsDevelopment())
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "Magic_VillaV1");
         options.SwaggerEndpoint("/swagger/v2/swagger.json", "Magic_VillaV2");
     });
-   
+
     app.UseSwaggerUI();
 }
 

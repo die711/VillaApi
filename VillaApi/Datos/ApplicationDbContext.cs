@@ -1,21 +1,24 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using VillaApi.Models;
 
 namespace VillaApi.Datos;
 
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext : IdentityDbContext<UsuarioAplicacion>
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options)
     {
         
     }
 
+    public DbSet<UsuarioAplicacion> UsuariosAplicacion { get; set; }
     public DbSet<Villa> Villas { get; set; }
     public DbSet<NumeroVilla> NumeroVillas  { get; set; }
     public DbSet<Usuario> Usuarios { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<Villa>().HasData(
             new Villa()
             {
@@ -43,7 +46,5 @@ public class ApplicationDbContext : DbContext
                 FechaActualizacion = DateTime.Now
             }
         );
-
-        base.OnModelCreating(modelBuilder);
     }
 }
