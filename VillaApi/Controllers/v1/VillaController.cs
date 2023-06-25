@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using VillaApi.Models;
 using VillaApi.Models.Dto;
+using VillaApi.Models.Especificaciones;
 using VillaApi.Repositorio.IRepositorio;
 
 namespace VillaApi.Controllers.v1;
@@ -29,6 +30,7 @@ public class VillaController : ControllerBase
     
     
     [HttpGet]
+    [ResponseCache(CacheProfileName = "Default30")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<APIResponse>> GetVillas()
     {
@@ -50,6 +52,33 @@ public class VillaController : ControllerBase
 
         return _response;
     }
+
+    [HttpGet("VillasPaginado")]
+    [ResponseCache(CacheProfileName = "Default30")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public ActionResult<APIResponse> GetVillasPaginado([FromQuery] Parametros parametros)
+    {
+        try
+        {
+            var villaList = _villaRepo.ObtenerTodosPaginado(parametros);
+            _response.Resultado = _mapper.Map<IEnumerable<VillaDto>>(villaList);
+            _response.EstatusCode = HttpStatusCode.OK;
+            _response.TotalPaginas = villaList.MetaData.TotalPages;
+
+            return Ok(_response);
+        }
+        catch (Exception ex)
+        {
+            _response.IsExitoso = false;
+            _response.ErrorMessages = new List<string>() { ex.ToString() };
+        }
+
+        return _response;
+    }
+
+
+
+
 
     [HttpGet("{id:int}", Name = "GetVilla")]
     [Authorize]

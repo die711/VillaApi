@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using VillaApi.Datos;
+using VillaApi.Models.Especificaciones;
 using VillaApi.Repositorio.IRepositorio;
 
 namespace VillaApi.Repositorio;
@@ -38,6 +39,24 @@ public class Repositorio<T> : IRepositorio<T> where T : class
         }
 
         return await query.ToListAsync();
+    }
+
+    public PagedList<T> ObtenerTodosPaginado(Parametros parametros, Expression<Func<T, bool>>? filtro = null, string? incluirPropiedades = null)
+    {
+        IQueryable<T> query = dbSet;
+
+        if (filtro != null)
+            query = query.Where(filtro);
+
+        if (incluirPropiedades != null)
+        {
+            foreach (var propiedad in incluirPropiedades.Split(new char[] {','}, StringSplitOptions.RemoveEmptyEntries))
+            {
+                query = query.Include(propiedad);
+            }
+        }
+
+        return PagedList<T>.ToPagedList(query, parametros.PageNumber, parametros.PageSize);
     }
 
     public async Task<T?> Obtener(Expression<Func<T, bool>>? filtro = null, bool tracked = true, string? incluirPropiedades = null)
