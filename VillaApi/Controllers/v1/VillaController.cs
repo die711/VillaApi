@@ -27,8 +27,8 @@ public class VillaController : ControllerBase
         _mapper = mapper;
         _response = new();
     }
-    
-    
+
+
     [HttpGet]
     [ResponseCache(CacheProfileName = "Default30")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -76,10 +76,6 @@ public class VillaController : ControllerBase
         return _response;
     }
 
-
-
-
-
     [HttpGet("{id:int}", Name = "GetVilla")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -120,7 +116,7 @@ public class VillaController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles ="master", AuthenticationSchemes = "Bearer")]
+    [Authorize(Roles = "master", AuthenticationSchemes = "Bearer")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<APIResponse>> CrearVilla([FromBody] VillaCreateDto? createDto)
@@ -160,7 +156,7 @@ public class VillaController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    [Authorize(Roles ="admin")]
+    [Authorize(Roles = "admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -181,10 +177,10 @@ public class VillaController : ControllerBase
                 _response.EstatusCode = HttpStatusCode.NotFound;
                 return NotFound(_response);
             }
-            
+
             Villa modelo = _mapper.Map<Villa>(updateDto);
-            
-            
+
+
             await _villaRepo.Actualizar(modelo);
             _response.EstatusCode = HttpStatusCode.NoContent;
             return Ok(_response);
@@ -199,7 +195,7 @@ public class VillaController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
-    [Authorize(Roles ="admin")]
+    [Authorize(Roles = "admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -236,7 +232,7 @@ public class VillaController : ControllerBase
 
         return BadRequest(_response);
     }
-    
+
     [HttpPatch("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -245,25 +241,23 @@ public class VillaController : ControllerBase
         if (patchDto == null || id == 0)
             return BadRequest();
 
-        var villa =await _villaRepo.Obtener(v => v.Id == id, tracked: false);
-        
+        var villa = await _villaRepo.Obtener(v => v.Id == id, tracked: false);
+
         VillaUpdateDto villaDto = _mapper.Map<VillaUpdateDto>(villa);
 
         if (villa == null)
             return BadRequest();
-        
-        patchDto.ApplyTo(villaDto,ModelState);
+
+        patchDto.ApplyTo(villaDto, ModelState);
 
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
-        
+
         Villa modelo = _mapper.Map<Villa>(villaDto);
 
         await _villaRepo.Actualizar(modelo);
         _response.EstatusCode = HttpStatusCode.NoContent;
 
         return Ok(_response);
-        
     }
-    
 }
