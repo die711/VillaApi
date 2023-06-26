@@ -120,7 +120,7 @@ public class VillaController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles ="master")]
+    [Authorize(Roles ="master", AuthenticationSchemes = "Bearer")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<APIResponse>> CrearVilla([FromBody] VillaCreateDto? createDto)

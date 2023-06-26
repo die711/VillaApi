@@ -11,10 +11,10 @@ namespace VillaApi.Controllers;
 [ApiVersionNeutral]
 public class UsuarioController : Controller
 {
-    private readonly IUsuarioRepositorio _usuarioRepo;
+    private readonly IUsuarioIdentityRepositorio _usuarioRepo;
     private APIResponse _response;
 
-    public UsuarioController(IUsuarioRepositorio usuarioRepo)
+    public UsuarioController(IUsuarioIdentityRepositorio usuarioRepo)
     {
         _usuarioRepo = usuarioRepo;
         _response = new();
